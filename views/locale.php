@@ -14,9 +14,9 @@ RSS;
 if ($locamotion) {
     $rss_status .= '<img src="assets/images/locamotion.png" class="locamotion" />';
 }
-$rss_status .= '</div>';
+$rss_status .= '</a></div>';
 
-$lang_files_status = '<h2>State of your lang files <small>(data updated every 15 minutes)</small></h2>';
+$lang_files_status = "<h2><a href=\"". LANG_CHECKER . "?locale=$locale\">State of your lang files</a> <small>(data updated every 15 minutes)</small></h2>";
 $total_identical = 0;
 foreach ($lang_files as $site => $tablo) {
 

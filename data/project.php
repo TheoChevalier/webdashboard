@@ -1,35 +1,27 @@
 <?php
+
 // This is the list of the tracked pages
-
-
 $australis_core = [
-        ['file' => 'firefox/desktop/index.lang',
-         'site' => 0],
-        ['file' => 'firefox/desktop/fast.lang',
-         'site' => 0],
-        ['file' => 'firefox/desktop/trust.lang',
-         'site' => 0],
-        ['file' => 'firefox/desktop/customize.lang',
-         'site' => 0],
-        ['file' => 'firefox/australis/firefox_tour.lang',
-         'site' => 0],
-        ['file' => 'firefox/sync.lang',
-         'site' => 0]
-    ];
+    'firefox/desktop/index.lang' => ['site' => 0],
+    'firefox/desktop/fast.lang' => ['site' => 0],
+    'firefox/desktop/trust.lang' => ['site' => 0],
+    'firefox/desktop/customize.lang' => ['site' => 0],
+    'firefox/australis/firefox_tour.lang' => ['site' => 0],
+    'firefox/sync.lang' => ['site' => 0]
+];
 
 $australis_mozorg = $australis_core;
-$australis_mozorg[] = ['file' => 'firefox/new.lang','site' => 0];
-$australis_mozorg[] = ['file' => 'mozorg/home.lang', 'site' => 0];
-$australis_mozorg[] = ['file' => 'tabzilla/tabzilla.lang', 'site' => 0];
+$australis_mozorg['firefox/new.lang'] = ['site' => 0];
+$australis_mozorg['mozorg/home.lang'] = ['site' => 0];
+$australis_mozorg['tabzilla/tabzilla.lang'] = ['site' => 0];
 
 $australis_all = $australis_mozorg;
-$australis_all[] = ['file' => 'main.lang', 'site' => 0];
-$australis_all[] = ['file' => 'apr2014.lang', 'site' => 6];
+$australis_all['apr2014.lang'] = ['site' => 6];
+$australis_all['main.lang'] = ['site' => 0];
 
 $pages = [
     'default' => [
-        ['file' => 'main.lang',
-         'site' => 0],
+        'main.lang' => ['site' => 0]
     ],
     'australis_core' => $australis_core,
     'australis_mozorg' => $australis_mozorg,
@@ -41,9 +33,9 @@ $pages = [
          'site' => 0],
         ['file' => 'firefox/partners/index.lang',
          'site' => 0],
+    ],
     'firefox_usage' => [
         ['file' => 'firefox/desktop/tips.lang',
          'site' => 0],
-    ],
     ],
 ];

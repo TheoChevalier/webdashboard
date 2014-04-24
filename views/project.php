@@ -2,8 +2,9 @@
 namespace Webdashboard;
 
 $body_class = $body_class . ' project';
-$links = '<script language="javascript" type="text/javascript" src="./assets/js/sorttable.js"></script>';
-$content = "
+$links = '<script language="javascript" type="text/javascript" src="./assets/js/sorttable.js"></script>'
+       . '<script language="javascript" type="text/javascript" src="./assets/js/toggle.js"></script>';
+$content = "<button class=\"button\" onclick=\"toggle('localedone')\">Toggle completed locales</button>
     <table class=\"table sortable\" id=\"project\">
         <caption>L10n Project Dashboard ($project)</caption>
         <thead>
@@ -11,8 +12,8 @@ $content = "
                 <th>Locale</th>";
 
 // Display columns name
-foreach ($pages as $page) {
-    $content .= '<td>' . $page['file'] . '</td>';
+foreach ($pages as $page => $page_status) {
+    $content .= '<td>' . $page . '</td>';
 }
 $content .= '
             </tr>
@@ -20,10 +21,15 @@ $content .= '
         <tbody>';
 
 // Display status for all pages per locale
-foreach ($status_formated as $locale => $array_status) {
+foreach ($status as $locale => $array_status) {
     $working_on_locamotion = in_array($locale, $locamotion);
-    $content .= '<tr>' . "\n"
-              . "<td><a href=\"?locale=$locale\">$locale";
+    $done = array_key_exists($locale, array_flip($locale_done));
+    if ($done) {
+        $content .= '<tr class="localedone">' . "\n";
+    } else {
+        $content .= '<tr>' . "\n";
+    }
+    $content .= "<td><a href=\"?locale=$locale\">$locale";
     if ($working_on_locamotion) {
         $content .= '<img src="./assets/images/locamotion_16.png" class="locamotion" />';
     }
@@ -61,20 +67,27 @@ $content .= '</tbody>'
 $content .= '<table class="results sortable">
                 <thead>
                   <tr>
-                    <th>Page</th><th>Completion</th>
+                    <th>Page</th><th>Completion</th><th>% of ADU</th>
                   </tr>
                 </thead>
                 <tbody>';
 
-foreach ($locale_done_per_page as $page => $locales) {
-    $content .= '<tr><td colspan="1">' . $page . '</td>'
-              . '<td colspan="1"> ' . count($locales) . '/'
-              . $total_locales . ' perfect locales ('. $page_coverage[$page] . '%)</td></tr>';
+foreach ($pages as $page => $page_status) {
+    $done = count($page_status['done_locales']);
+    $nb_locales = $page_status['nb_locales'];
+
+    $content .= '<tr><td colspan="1" class="left">' . $page . '</td><td colspan="1"';
+    // Page done for all target locales
+    if ($done == $nb_locales) {
+        $content .= ' class="green"';
+    }
+    $content .= '> ' . $done . ' locales ready on ' . $nb_locales  . '</td>'
+              . '<td colspan="1">' . $page_status['coverage'] . '%</td></tr>';
 }
 
 // Display global stats
-$content .= '<tr><td colspan="2" class="final">Total: ' . count($locale_done) . '/' . $total_locales . ' perfect locales (' . $perfect_locales_coverage . '%)</td></tr>'
-          . '<tr><td colspan="2">Average: ' . $average_nb_locales . '/' . $total_locales . ' perfect locales (' . $average_coverage . '%)</td></tr>'
+$content .= '<tr><td colspan="3" class="final">Total: ' . count($locale_done) . ' locales ready (' . $perfect_locales_coverage . '% of ADU)</td></tr>'
+          . '<tr><td colspan="3">On average, we have ' . $average_nb_locales . ' locales ready per file (' . $average_coverage . '% of ADU)</td></tr>'
           . '</tbody>'
           . '</table>';
 

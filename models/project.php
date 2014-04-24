@@ -17,9 +17,9 @@ $sum_pages = count($pages);
 
 // Get all locales from project pages list
 $locales = [];
-foreach ($pages as $page) {
-    $json_string = $langchecker_query . '&file=' . $page['file'] . '&website=' . $page['site'];
-    $data_page = Json::fetch(Utils::cacheUrl($json_string))[$page['file']];
+foreach ($pages as $page => $page_status) {
+    $json_string = $langchecker_query . '&file=' . $page . '&website=' . $page_status['site'];
+    $data_page = Json::fetch(Utils::cacheUrl($json_string))[$page];
     foreach ($data_page as $key => $val) {
         if (in_array($key, $locales)) {
             continue;
@@ -30,15 +30,15 @@ foreach ($pages as $page) {
 $total_locales = count(array_unique($locales));
 
 // Get status from all locales for each page
-foreach ($pages as $page) {
-    $json_string = $langchecker_query . '&file=' . $page['file'] . '&website=' . $page['site'];
-    $data_page = Json::fetch(Utils::cacheUrl($json_string))[$page['file']];
+foreach ($pages as $page => $page_status) {
+    $json_string = $langchecker_query . '&file=' . $page . '&website=' . $page_status['site'];
+    $data_page = Json::fetch(Utils::cacheUrl($json_string))[$page];
     foreach ($locales as $locale) {
         if (in_array($locale, array_keys($data_page))) {
-            $status[$locale][$page['file']] = $data_page[$locale];
+            $status[$locale][$page] = $data_page[$locale];
             continue;
         }
-        $status[$locale][$page['file']] = 'none';
+        $status[$locale][$page] = 'none';
     }
 }
 ksort($status);
@@ -52,13 +52,16 @@ foreach ($status as $locale => $array_status) {
         // This locale does not have this page
         if ($result != 'none') {
             $total_page++;
+            (isset($pages[$key]['nb_locales']))
+                ? $pages[$key]['nb_locales']++
+                : $pages[$key]['nb_locales'] = 1;
             // Page done
             if ($result['Identical'] == 0 && $result['Missing'] == 0) {
                 $page_done++;
                 $result = 'done';
-                (isset($locale_done_per_page[$key]))
-                    ? $locale_done_per_page[$key][] = $locale
-                    : $locale_done_per_page[$key] = [$locale];
+                (isset($pages[$key]['done_locales']))
+                    ? $pages[$key]['done_locales'][] = $locale
+                    : $pages[$key]['done_locales'] = [$locale];
             // Missing
             } elseif ($result['Translated'] == 0) {
                 $result = 'missing';
@@ -77,13 +80,14 @@ foreach ($status as $locale => $array_status) {
 }
 $percent_locale_done = round(count($locale_done) / $total_locales * 100, 2);
 
+$status = $status_formated;
+
 // Compute user bse coverage for each page then an average
-$page_coverage = [];
 $sum_percent_covered_users = $sum_locales_per_page = 0;
-foreach ($locale_done_per_page as $page => $locales) {
-    $page_coverage[$page] = Utils::getUserBaseCoverage($locales);
-    $sum_percent_covered_users += $page_coverage[$page];
-    $sum_locales_per_page += count($locales);
+foreach ($pages as $page => $page_status) {
+    $pages[$page]['coverage'] = Utils::getUserBaseCoverage($page_status['done_locales']);
+    $sum_percent_covered_users += $pages[$page]['coverage'];
+    $sum_locales_per_page += count($page_status['done_locales']);
 }
 
 $perfect_locales_coverage = Utils::getUserBaseCoverage($locale_done);

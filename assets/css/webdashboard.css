@@ -42,6 +42,11 @@ div#locales {
     font-weight: bold;
 }
 
+#main-content table.results td.green {
+    font-weight: bold;
+    color: green;
+}
+
 #main-content table th {
     text-align: left;
 }
